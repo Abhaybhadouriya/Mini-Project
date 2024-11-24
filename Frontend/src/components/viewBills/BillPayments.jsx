@@ -41,6 +41,9 @@ function BillPayments(props) {
             setLoading(false);
             console.log(data);
         } catch (error) {
+            alert("Invalid Session");
+            localStorage.removeItem('authToken'); 
+            window.location.reload();
             setError(error.message);
             setLoading(false);
         }

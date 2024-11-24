@@ -5,6 +5,7 @@ import com.abhay.entity.Bill;
 import com.abhay.entity.Customer;
 import com.abhay.entity.StudentPayment;
 import com.abhay.exception.CustomerNotFoundException;
+import com.abhay.exception.BillNotFoundException;
 import com.abhay.helper.EncryptionService;
 import com.abhay.helper.JWTHelper;
 import com.abhay.mapper.CustomerMapper;
@@ -152,6 +153,7 @@ public class CustomerService {
         List<PaidBills> paidBills = new ArrayList<>();
 
         for (Object[] row : results) {
+            System.out.println(Arrays.toString(row));
             Long studentId = (Long) row[0];
             BigDecimal amount = (BigDecimal) row[1];
             LocalDate paymentDate = ((java.sql.Date) row[2]).toLocalDate();
@@ -240,14 +242,18 @@ public class CustomerService {
         try {
             // Retrieve student and bill based on provided IDs
             Customer student = customerRepo.findById(feesPayment.studentId())
-                    .orElseThrow(() -> new RuntimeException("Student not found"));
+                    .orElseThrow(() -> new CustomerNotFoundException(
+                            format("Cannot update Fees:: No customer found with the provided ID:: %d", feesPayment.studentId())
+                    ));
             Bill bill = billRepo.findById(feesPayment.billId())
-                    .orElseThrow(() -> new RuntimeException("Bill with ID  not found"));
+                    .orElseThrow(() -> new BillNotFoundException(
+                            format("Cannot update Fees:: No Bill found with the provided ID:: %d", feesPayment.studentId())
+                    ));
 
 
             // Map the DTO to the entity
             StudentPayment studentPayment = customerMapper.toEntity(feesPayment, student, bill);
-
+            System.out.println(studentPayment.toString());
             // Save the payment
             studentPaymentRepo.save(studentPayment);
 

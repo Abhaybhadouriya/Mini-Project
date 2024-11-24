@@ -47,6 +47,9 @@ function AllTransactions(props) {
             console.log(data);
         } catch (error) {
             setError(error.message);
+            alert("Invalid Session");
+            localStorage.removeItem('authToken'); 
+            window.location.reload();
             setLoading(false);
         }
     };

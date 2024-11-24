@@ -40,8 +40,13 @@ function PaymentHistoryPage(props) {
             setLoading(false);
             console.log(data);
         } catch (error) {
+          
             setError(error.message);
+            alert("Invalid Session");
+            localStorage.removeItem('authToken'); 
+            window.location.reload();
             setLoading(false);
+            
         }
     };
   }
@@ -82,7 +87,7 @@ if (error) {
         unpaidBills.map((doc,index)=>{
             return(
                 <RowStructureIterator
-                pid={doc.billId}
+                pid={doc.studentId}
                 amount={doc.amount}
                 date={doc.deadline}
                 bid={doc.billId}

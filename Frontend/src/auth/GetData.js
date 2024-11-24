@@ -23,7 +23,11 @@ export const GetData = async (token, setIsDataFetched,setUserData) => {
         // Set authentication status to true
         setIsDataFetched(true);
     } catch (error) {
+        alert("Invalid Session");
         console.error("Invalid or expired token", error);
         setIsDataFetched(false);  // In case the token is invalid
+        localStorage.removeItem('authToken'); 
+        window.location.reload();
+        
     }
 };
