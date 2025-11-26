@@ -34,7 +34,7 @@ public class RequestInterceptor implements HandlerInterceptor {
         }
 
         String token = authorizationHeader.substring(7); // Extract token from "Bearer {token}"
-        System.out.println(token);
+//        System.out.println(token);
 
         if (!jwtUtil.validateToken(token)) {
             setResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");            return false;
@@ -50,8 +50,8 @@ public class RequestInterceptor implements HandlerInterceptor {
 
     private void setResponse(HttpServletResponse response, int status, String message) throws Exception {
         response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+//        response.setContentType("application/json");
+//        response.setCharacterEncoding("UTF-8");
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = mapper.writeValueAsString(
                 Map.of(

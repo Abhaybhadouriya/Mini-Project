@@ -36,7 +36,7 @@ public class CustomerService {
     private final BillRepo billRepo;
     private final StudentPaymentRepo studentPaymentRepo;
     /// added
-    private BCryptPasswordEncoder passwordEncoder;
+//    private BCryptPasswordEncoder passwordEncoder;
     private final JWTHelper jwtHelper;
     public ResponseEntity<Object> createCustomer(CustomerRequest request) {
         try {
@@ -58,7 +58,7 @@ public class CustomerService {
                     ));
         } catch (DataIntegrityViolationException e) {
             // Handle database constraint violations, such as duplicate email
-            System.out.println(e.getMessage());
+//            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of(
                             "status", "error",
@@ -153,7 +153,7 @@ public class CustomerService {
         List<PaidBills> paidBills = new ArrayList<>();
 
         for (Object[] row : results) {
-            System.out.println(Arrays.toString(row));
+//            System.out.println(Arrays.toString(row));
             Long studentId = (Long) row[0];
             BigDecimal amount = (BigDecimal) row[1];
             LocalDate paymentDate = ((java.sql.Date) row[2]).toLocalDate();
@@ -168,6 +168,65 @@ public class CustomerService {
 
         return paidBills;
     }
+//    public List<BillWithPayments> getBillsWithPayments(long studentId) {
+//        List<Object[]> results = customerRepo.findBillsWithPaymentsByStudentId(studentId);
+//
+//        Map<Long, BillWithPayments> billMap = new LinkedHashMap<>();
+//
+//        for (Object[] row : results) {
+//            Long billId = (Long) row[0];
+//            String description = (String) row[1];
+//            BigDecimal amount = (BigDecimal) row[2];
+//            String billDate = (String) row[3];
+//            String deadline = (String) row[4];
+//            BigDecimal remaining = (BigDecimal) row[5];
+//            BigDecimal paid = (BigDecimal) row[6];
+//            Long paymentId = (Long) row[7];
+//            BigDecimal paymentAmount = (BigDecimal) row[8];
+//            String paymentDate = (String) row[9];
+//            String paymentDescription = (String) row[10];
+//
+//            // Retrieve or create a new BillWithPayments object
+//            BillWithPayments bill = billMap.getOrDefault(billId, new BillWithPayments());
+//
+//            // If this is the first time processing this bill, initialize its fields
+//            if (!billMap.containsKey(billId)) {
+//                bill.setBillId(billId);
+//                bill.setDescription(description);
+//                bill.setAmount(amount);
+//                bill.setBillDate(billDate);
+//                bill.setDeadline(deadline);
+//                bill.setRemaining(amount); // Start with the full bill amount
+//                bill.setPaid(BigDecimal.ZERO); // Start with zero paid
+//            }
+//
+//            // Adjust the remaining and paid amounts
+//            BigDecimal currentRemaining = bill.getRemaining().subtract(paymentAmount != null ? paymentAmount : BigDecimal.ZERO);
+//            BigDecimal currentPaid = bill.getPaid().add(paymentAmount != null ? paymentAmount : BigDecimal.ZERO);
+//            bill.setRemaining(currentRemaining);
+//            bill.setPaid(currentPaid);
+//
+//            // Create a payment detail and add it to the bill
+//            if (paymentId != null) { // Only add payment details if there is a payment
+//                BillWithPayments.PaymentDetail payment = new BillWithPayments.PaymentDetail();
+//                payment.setPaymentId(paymentId);
+//                payment.setAmount(paymentAmount);
+//                payment.setPaymentDate(paymentDate);
+//                payment.setDescription(paymentDescription);
+//
+//                if (bill.getParts() == null) {
+//                    bill.setParts(new ArrayList<>()); // Initialize the list if null
+//                }
+//                bill.getParts().add(payment);
+//            }
+//
+//            // Put the updated bill back into the map
+//            billMap.put(billId, bill);
+//        }
+//
+//        return new ArrayList<>(billMap.values());
+//    }
+
     public List<BillWithPayments> getBillsWithPayments(long studentId) {
         List<Object[]> results = customerRepo.findBillsWithPaymentsByStudentId(studentId);
 
@@ -196,15 +255,10 @@ public class CustomerService {
                 bill.setAmount(amount);
                 bill.setBillDate(billDate);
                 bill.setDeadline(deadline);
-                bill.setRemaining(amount); // Start with the full bill amount
-                bill.setPaid(BigDecimal.ZERO); // Start with zero paid
+                // FIX: Use the calculated final total values returned by the DB query
+                bill.setRemaining(remaining);
+                bill.setPaid(paid);
             }
-
-            // Adjust the remaining and paid amounts
-            BigDecimal currentRemaining = bill.getRemaining().subtract(paymentAmount != null ? paymentAmount : BigDecimal.ZERO);
-            BigDecimal currentPaid = bill.getPaid().add(paymentAmount != null ? paymentAmount : BigDecimal.ZERO);
-            bill.setRemaining(currentRemaining);
-            bill.setPaid(currentPaid);
 
             // Create a payment detail and add it to the bill
             if (paymentId != null) { // Only add payment details if there is a payment
@@ -214,9 +268,9 @@ public class CustomerService {
                 payment.setPaymentDate(paymentDate);
                 payment.setDescription(paymentDescription);
 
-                if (bill.getParts() == null) {
-                    bill.setParts(new ArrayList<>()); // Initialize the list if null
-                }
+//                if (bill.getParts() == null) {
+//                    bill.setParts(new ArrayList<>()); // Initialize the list if null
+//                }
                 bill.getParts().add(payment);
             }
 
@@ -226,7 +280,6 @@ public class CustomerService {
 
         return new ArrayList<>(billMap.values());
     }
-
 
     public ResponseEntity<Map<String, Object>> generateResponse(HttpStatus status, String message, String token) {
         Map<String, Object> response = new HashMap<>();
@@ -253,7 +306,7 @@ public class CustomerService {
 
             // Map the DTO to the entity
             StudentPayment studentPayment = customerMapper.toEntity(feesPayment, student, bill);
-            System.out.println(studentPayment.toString());
+//            System.out.println(studentPayment.toString())
             // Save the payment
             studentPaymentRepo.save(studentPayment);
 
@@ -265,7 +318,7 @@ public class CustomerService {
                     ));
         } catch (DataIntegrityViolationException e) {
             // Handle database constraint violations, such as duplicate email
-            System.out.println(e.getMessage());
+//            System.out.println(e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(Map.of(
                             "status", "error",

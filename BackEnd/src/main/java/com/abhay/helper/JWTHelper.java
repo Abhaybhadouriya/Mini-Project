@@ -62,10 +62,10 @@ public class JWTHelper {
             Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
             return true; // Token is valid
         } catch (ExpiredJwtException e) {
-            System.out.println("Token expired: " + e.getMessage());
+//            System.out.println("Token expired: " + e.getMessage());
             return false; // Token is expired
         } catch (Exception e) {
-            System.out.println("Invalid token: " + e.getMessage());
+//            System.out.println("Invalid token: " + e.getMessage());
             return false; // Other token errors
         }
     }
